@@ -16,7 +16,7 @@ public:
     void Update() {}
 };
 
-class Wall : Collidable {
+class Wall : public Collidable {
 public:
     Wall(vec2d start, vec2d size);
 
@@ -24,7 +24,7 @@ public:
     void Update();
 };
 
-class Bird : Collidable {
+class Bird : public Collidable {
 public:
     vec2d m_vel;
 

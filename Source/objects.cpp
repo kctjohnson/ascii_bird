@@ -2,10 +2,10 @@
 #include "../Headers/draw.h"
 
 bool Collidable::CheckCollision(Collidable c) {
-    return (c.m_pos.x >= this->m_pos.x &&
-            c.m_pos.x <= this->m_pos.x + this->m_size.x &&
-            c.m_pos.y >= this->m_pos.y &&
-            c.m_pos.y <= this->m_pos.y + this->m_size.y);
+    return (this->m_pos.x >= c.m_pos.x &&
+            this->m_pos.x + this->m_size.x <= c.m_pos.x &&
+            this->m_pos.y >= c.m_pos.y &&
+            this->m_pos.y + this->m_size.y <= c.m_pos.y);
 }
 
 Wall::Wall(vec2d start, vec2d size) {
@@ -14,15 +14,20 @@ Wall::Wall(vec2d start, vec2d size) {
 }
 
 void Wall::Draw() {
-    Rect(m_pos.x, m_pos.y, m_size.x, m_size.y);
+    int showX = (int)(this->m_pos.x / scale);
+    int showY = (int)(this->m_pos.y / scale);
+    int showW = (int)(this->m_size.x / scale);
+    int showH = (int)(this->m_size.y / scale);
+    Rect(showX, showY, showW, showH);
 }
 
 void Wall::Update() {
-    m_pos.sub(speed_cap / 6.0, 0);
+    m_pos.sub(speed_cap, 0);
 }
 
 Bird::Bird(vec2d start) {
     m_pos.set(start);
+    m_size.set(scale, scale);
     m_vel.set(0.0, 0.0);
 }
 
