@@ -16,6 +16,7 @@ private:
 public:
     double x, y;
 
+    vec2d() : x(0), y(0) { }
     vec2d(double x, double y);
     
     // Return the vector as a string in (x, y) format
