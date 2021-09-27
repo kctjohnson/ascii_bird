@@ -3,9 +3,9 @@
 
 bool Collidable::CheckCollision(Collidable c) {
     return (this->m_pos.x >= c.m_pos.x &&
-            this->m_pos.x + this->m_size.x <= c.m_pos.x &&
+            this->m_pos.x + this->m_size.x <= c.m_pos.x + c.m_size.x &&
             this->m_pos.y >= c.m_pos.y &&
-            this->m_pos.y + this->m_size.y <= c.m_pos.y);
+            this->m_pos.y + this->m_size.y <= c.m_pos.y + c.m_size.y);
 }
 
 Wall::Wall(vec2d start, vec2d size) {
@@ -22,7 +22,7 @@ void Wall::Draw() {
 }
 
 void Wall::Update() {
-    m_pos.sub(speed_cap, 0);
+    m_pos.sub(speedCap, 0);
 }
 
 Bird::Bird(vec2d start) {
@@ -32,7 +32,7 @@ Bird::Bird(vec2d start) {
 }
 
 void Bird::Flap() {
-    m_vel.set(0, -speed_cap);
+    m_vel.set(0, -speedCap);
 }
 
 void Bird::Draw() {
@@ -44,7 +44,7 @@ void Bird::Draw() {
 void Bird::Update() {
     vec2d gravity(0, 0.3);
     m_vel.add(gravity);
-    m_vel.limit(speed_cap);
+    m_vel.limit(speedCap);
 
     m_pos.add(m_vel);
 }

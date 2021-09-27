@@ -3,7 +3,7 @@
 #include "vec.h"
 
 extern const double scale;
-extern const double speed_cap;
+extern const double speedCap;
 
 class Collidable {
 public:

@@ -6,12 +6,15 @@
 #include "Headers/vec.h"
 #include "Headers/objects.h"
 
-const double fps_cap = 60;
+const double fpsCap = 60;
 const double scale = 20;
-const double speed_cap = 10;
+const double speedCap = 10;
 
 double screenWidth;
 double screenHeight;
+
+double holeSize;
+double lastWallHole;
 
 bool HandleInput(Bird& b) {
     char c = getch();
@@ -29,7 +32,18 @@ bool HandleInput(Bird& b) {
 void AddWall(std::vector<Wall>& walls) {
     // Add one if the last wall is past a certain point
     if (walls[walls.size() - 1].m_pos.x < (screenWidth / 5.0 * 4)) {
-        walls.push_back(Wall(vec2d(screenWidth, 0), vec2d(screenWidth / 20, screenHeight)));
+        walls.push_back(Wall(vec2d(screenWidth, 0), vec2d(screenWidth / 20, lastWallHole)));
+        walls.push_back(Wall(vec2d(screenWidth, lastWallHole + holeSize), vec2d(screenWidth / 20, screenHeight - (lastWallHole + holeSize))));
+
+        if (rand() % 2 == 0) {
+            // Increase the last hole position
+            lastWallHole -= holeSize;
+            if (lastWallHole < 0) lastWallHole = 0;
+        } else {
+            // Decrease the last hole position
+            lastWallHole += holeSize;
+            if (lastWallHole > screenHeight - holeSize) lastWallHole = screenHeight - holeSize;
+        }
     }
 }
 
@@ -44,6 +58,9 @@ bool BirdColliding(Bird b, std::vector<Wall> walls) {
 }
 
 int main() {
+    // Seed random for the wall positions
+    srand(time(NULL));
+
     // Initialize all of the needed bits for curses
     initscr();
     cbreak();
@@ -61,8 +78,13 @@ int main() {
     Bird b(vec2d(screenWidth / 100, screenHeight / 2));
     b.Flap();
 
+    // Set the last wall hole position and make a new set of walls
+    holeSize = screenHeight / 5;
+    lastWallHole = screenHeight / 2 - holeSize / 2;
+
     std::vector<Wall> walls;
-    walls.push_back(Wall(vec2d(screenWidth, 0), vec2d(screenWidth / 20, screenHeight)));
+    walls.push_back(Wall(vec2d(screenWidth, 0), vec2d(screenWidth / 20, lastWallHole)));
+    walls.push_back(Wall(vec2d(screenWidth, lastWallHole + holeSize), vec2d(screenWidth / 20, screenHeight - (lastWallHole + holeSize))));
 
     // Small clock object to cap the fps
     Clock timer;
@@ -79,7 +101,7 @@ int main() {
         AddWall(walls);
 
         // Update all of the walls and draw them
-        for (int i = 0; i < walls.size(); i++) {
+        for (int i = 0; i < (int)walls.size(); i++) {
             walls[i].Draw();
             walls[i].Update();
 
@@ -88,17 +110,18 @@ int main() {
             }
         }
 
-        // Debug info
-        mvprintw(0, 15, "Walls: %d", walls.size());
-        mvprintw(1, 15, "Colliding: %s", BirdColliding(b, walls) ? "true" : "false");
         // Write the changes to the console
         refresh();
 
         // Cap the framerate so the speed is consistent
-        timer.CapFPS(fps_cap);
+        timer.CapFPS(fpsCap);
+
+        if (BirdColliding(b, walls) || b.m_pos.y > screenHeight) break;
     }
 
     // Pause for input before cleaning up and exiting
+    mvprintw(LINES / 2, COLS / 2, "GAME OVER | PRESS Q TO EXIT");
+    while (getch() != 'q') {}
     endwin();
 
     return 0;
