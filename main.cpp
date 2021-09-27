@@ -16,6 +16,8 @@ double screenHeight;
 double holeSize;
 double lastWallHole;
 
+int score = 0;
+
 bool HandleInput(Bird& b) {
     char c = getch();
     switch (c) {
@@ -100,6 +102,8 @@ int main() {
 
         AddWall(walls);
 
+        mvprintw(0, 0, "Score: %d", score / 2);
+
         // Update all of the walls and draw them
         for (int i = 0; i < (int)walls.size(); i++) {
             walls[i].Draw();
@@ -107,6 +111,7 @@ int main() {
 
             if (walls[i].m_pos.x + walls[i].m_size.x <= 0) {
                 walls.erase(walls.begin() + i);
+                score++;
             }
         }
 
@@ -120,6 +125,7 @@ int main() {
     }
 
     // Pause for input before cleaning up and exiting
+    mvprintw(0, 0, "Score: %d", score / 2);
     mvprintw(LINES / 2, COLS / 2, "GAME OVER | PRESS Q TO EXIT");
     while (getch() != 'q') {}
     endwin();
